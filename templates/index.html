@@ -18,9 +18,30 @@
                 <a href="{{ url_for('signup') }}" class="active">Sign up</a>
                 {% endif %}
                 {% if loggedin == True %}
+                <a href="{{ url_for('courses') }}" class="active">Courses</a>
                 <a href="{{ url_for('logout') }}">Logout</a>
                 {% endif %}
             </div>
         </nav>
+        <div class="courses">
+            {% if loggedin == True %}
+                {% if courses %}
+                    <h1>My Courses</h1>
+                    {% for course in courses: %}
+                    <div class="course">
+                        <div class="course-left">
+                            <image src="{{url_for('static', filename=course['photo'])}}.jpg" alt="default image"></image>
+                            <a href="{{ url_for('course') }}/{{ course['id'] }}">{{ course['name'] }}</a>
+                        </div>
+                        <a class="enroll" href="{{ url_for('removecourse') }}/{{ course['id'] }}">Remove</a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <h1>Enroll in a course here: <a class="button" href="{{ url_for('courses') }}" class="active">Courses</a></h1>
+                {% endif %}
+            {% else %}
+            <h1>Login to enroll in a course</h1>
+            {% endif %}
+        </div>
 	</body>
 </html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LanguageLink</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    </head>
+    <body>
+        <div>
+            <nav class="navtop">
+                <div class="logo">
+                    <a href="{{ url_for('index') }}">App</a>
+                </div>
+                <div class="menu">
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                </div>
+            </nav>
+            <div class="courses">
+                <h1>Courses</h1>
+                {% for course in courses: %}
+                <div class="course">
+                    <div class="course-left">
+                        <image src="{{url_for('static', filename=course['photo'])}}.jpg" alt="default image"></image>
+                        <a href="{{ url_for('course') }}/{{ course['id'] }}">{{ course['name'] }}</a>
+                    </div>
+                    <a class="enroll" href="{{ url_for('enroll') }}/{{ course['id'] }}">Enroll</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </body>
+</html>

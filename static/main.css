@@ -88,3 +88,109 @@ body {
     display: flex;
     flex-direction: row;
 }
+
+.msg {
+    margin-bottom: 1.5rem;
+    color: red;
+}
+
+.courses {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    margin: auto;
+    max-width: 1000px;
+    margin-top: 2rem;
+}
+
+.courses h1 {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.course {
+    display: flex;
+    align-items: center;
+    background-color: #eee;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+    border-radius: 5px;
+    justify-content: space-between;
+}
+
+.course_info {
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+.course-left {
+    display: flex;
+    flex-direction: row;
+}
+
+.continue_course_btn {
+    background-color: #186718;
+    color: #FFF;
+    padding: 1rem;
+    border-radius: 5px;
+    text-align: center;
+    min-width: 117px;
+    transition: all 0.3s ease;
+}
+
+.continue_course_btn:hover {
+    background-color: #145514;
+    color: #FFF;
+}
+
+
+.continue_course_btn:visited {
+    color: #FFF;
+}
+
+@media screen and (max-width: 900px) {
+    .courses {
+        width: 100%;
+    }
+}
+
+.courses .course a {
+    line-height: 5rem;
+    padding-left: 1rem;;
+}
+
+a{ text-decoration: none; color: #333 }
+a:visited { text-decoration: none; color:#333; }
+a:hover { text-decoration: none; color:#333; }
+a:focus { text-decoration: none; color:#333; }
+a:hover, a:active { text-decoration: none; color:#333 }
+
+.button {
+    border: #333;
+    border-style: solid;
+    border-radius: 10px;
+    padding: 10px;
+    transition: all 0.3s ease;
+}
+
+.button:hover {
+    background-color: #DDD;
+}
+
+.course img {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 5px;
+}
+
+.course_info_wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.course_wrapper {
+    width: 100%;
+    max-width: 715px;
+    margin: auto;
+}

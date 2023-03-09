@@ -11,9 +11,17 @@ mysql = MySQL(app)
 def index():
     # Check if the user is logged in
     if session.get('loggedin') == True:
-        return render_template('index.html', loggedin=True)
+        userid = session['id']
+
+        # Get all the courses that the user is enrolled in
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT courses.id, courses.name, courses.category, courses.photo FROM courses INNER JOIN users_courses ON courses.id = users_courses.courseid WHERE users_courses.userid =  %s', (userid,))
+        courses = cursor.fetchall()
+
+        return render_template('index.html', courses=courses, loggedin=True)
     else:
         return render_template('index.html', loggedin=False)
+
 
 
 # This route handles user login request
