@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory
 from flask_mysqldb import MySQL
 from flask import jsonify
 import MySQLdb.cursors
@@ -193,7 +193,7 @@ def removecourse(id):
     finally:
         cursor.close()
 
-    return render_template('home.html', courses=courses)
+    return render_template('index.html', courses=courses)
 
 
 
@@ -225,6 +225,40 @@ def course(courseid):
 
 
 
+# This route handles requests to the '/lesson' endpoint.
+@app.route('/lesson/<int:lesson_id>', methods=['GET', 'POST'])
+@app.route('/lesson', methods=['GET', 'POST'], defaults={'lesson_id': None})
+def lesson(lesson_id):
+    lesson, slides = get_lessons_slides(lesson_id)
+
+
+    # Renders view lesson template
+    return render_template('lesson.html', lesson=lesson, slides=slides)
+
+
+
+# This route handles requests to the '/startlesson' endpoint.
+@app.route('/startlesson/<int:lesson_id>', methods=['GET', 'POST'])
+@app.route('/startlesson', methods=['GET', 'POST'], defaults={'lesson_id': None})
+def startlesson(lesson_id):
+    lesson, slides = get_lessons_slides(lesson_id)
+
+    # Renders playlesson template and returns the data needed to play the lesson
+    return render_template('playlesson.html', lesson=lesson, slides=slides)
+
+
+
+# This route handles requests to the '/multiple_choice_lesson' endpoint.
+@app.route('/multiple_choice_lesson/<int:lesson_id>', methods=['GET', 'POST'])
+@app.route('/multiple_choice_lesson', methods=['GET', 'POST'], defaults={'lesson_id': None})
+def start_mp_lesson(lesson_id):
+    lesson, slides = get_lessons_slides(lesson_id)
+
+    # Renders multiple choice template and returns the data needed to play the lesson
+    return render_template('multiple_choice_lesson.html', lesson=lesson, slides=slides)
+
+
+    
 # Check if user enrolled in a course 
 def is_enrolled(userid, courseid):
     cursor = mysql.connection.cursor()
@@ -237,9 +271,34 @@ def is_enrolled(userid, courseid):
 
 
 
+# Check if user has learned all slides in a course 
+def learned_all_slides(userid, courseid):
+    cursor = mysql.connection.cursor()
+    cursor.execute('SELECT * FROM users_slides WHERE state = %s AND userid = %s AND courseid = %s', ('unlearned', userid, courseid,))
+    slides = cursor.fetchone()
+    cursor.close()
+    if not slides:
+        return True
+    return False
+
+
+
 def get_first_unlearned_slide_lessonid(userid, courseid):
     cursor = mysql.connection.cursor()
     cursor.execute('SELECT lessonid FROM slides WHERE id = (SELECT slideid FROM users_slides WHERE userid = %s AND courseid = %s AND state = %s LIMIT 1);', (userid, courseid, 'unlearned',))
     lessonid = cursor.fetchone()
     cursor.close()
     return lessonid
+
+
+
+# Returns a lesson and its slides
+def get_lessons_slides(lesson_id):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT * FROM lessons WHERE lesson_id =  %s', (lesson_id,))
+    lesson = cursor.fetchone()
+
+    cursor.execute('SELECT * FROM slides WHERE lessonid =  %s', (lesson_id,))
+    slides = cursor.fetchall()
+
+    return (lesson, slides)

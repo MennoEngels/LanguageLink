@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LanguageLink</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    </head>
+    <body>
+        <div>
+            <nav class="navtop">
+                <div class="logo">
+                    <a href="{{ url_for('index') }}">App</a>
+                </div>
+                <div class="menu">
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                </div>
+            </nav>
+            <div class="slides">
+                <div class="top">
+                    <h1>{{ lesson['lesson_name'] }}</h1>
+                    <div class="start">
+                        <a href="{{ url_for('startlesson') }}/{{ lesson['lesson_id'] }}">Start</a>
+                    </div>
+                </div>
+                {% for slide in slides: %}
+                <div class="slide">
+                    <div class="col">{{ slide['front'] }}</div>
+                    <div class="col">{{ slide['back'] }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </body>
+</html>
