@@ -104,3 +104,142 @@ def logout():
 
     return render_template('index.html', loggedin=False)
 
+
+
+@app.route('/courses')
+def courses():
+    # Redirect to login page if not logged in
+    if session.get('loggedin') != True:
+        return redirect(url_for('login'))
+
+    userid = session.get('id')
+
+    # Get all the courses that the user is not enrolled in
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT * FROM courses WHERE id NOT IN (SELECT courseid FROM users_courses WHERE userid = %s)', (userid,))
+    courses = cursor.fetchall()
+
+    # Render the courses template with the list of available courses
+    return render_template('courses.html', courses=courses)
+
+
+
+# This route handles requests to enroll a user into a course
+@app.route('/enroll/<int:id>', methods=['GET', 'POST'])
+@app.route('/enroll', methods=['GET', 'POST'], defaults={'id': None})
+def enroll_user(courseid):
+    userid = session.get('id')
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    try:
+        # Check if the user is already enrolled in the course
+        enrolled = is_enrolled(userid, courseid)
+
+        if not enrolled:
+            # If the user is not enrolled, enroll the user
+            cursor.execute('INSERT INTO users_courses (userid, courseid) VALUES (%s, %s)', (userid, courseid,))
+
+            # Retrieve all slides for this course
+            cursor.execute('SELECT slides.id FROM slides INNER JOIN lessons ON slides.lessonid = lessons.lesson_id INNER JOIN courses ON lessons.courseid = courses.id WHERE courses.id = %s', (courseid,))
+            slide_ids = cursor.fetchall()
+
+            # Create a list of tuples that maps each slide ID from the course with the current userid
+            values = [(slide_id['id'], userid) for slide_id in slide_ids]
+
+            # Creating a new instance for each slide specific to the current user
+            cursor.executemany('INSERT INTO users_slides (slideid, userid) VALUES (%s, %s)', values)
+
+            mysql.connection.commit()
+
+            # Get the course and its lessons
+            cursor.execute('SELECT * FROM courses WHERE id =  %s', (courseid,))
+            course = cursor.fetchone()
+            cursor.execute('SELECT * FROM lessons WHERE courseid =  %s', (courseid,))
+            lessons = cursor.fetchall()
+    except Exception as e:
+        mysql.connection.rollback()
+        raise e
+    finally:
+        cursor.close()
+
+    # Render the course page with the retrieved course and lessons
+    return render_template('course.html', course=course, lessons=lessons)
+
+
+
+# This route handles requests to remove a course from the user's enrolled courses list
+@app.route('/removecourse/<int:id>', methods=['GET', 'POST'])
+@app.route('/removecourse', methods=['GET', 'POST'], defaults={'id': None})
+def removecourse(id):
+    userid = session.get('id')
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    try:
+        # Remove all the user's slides for this course
+        cursor.execute('DELETE users_slides FROM users_slides INNER JOIN users_courses ON users_slides.userid = users_courses.userid WHERE users_courses.courseid = %s', (id,))
+        mysql.connection.commit()
+
+        # Remove the course from the user's enrolled courses
+        cursor.execute('DELETE FROM users_courses WHERE userid = %s AND courseid = %s', (userid, id,))
+        mysql.connection.commit()
+
+        # Get the remaining courses the user is enrolled in
+        cursor.execute('SELECT courses.id, courses.name, courses.category, courses.photo FROM courses INNER JOIN users_courses ON courses.id = users_courses.courseid WHERE users_courses.userid =  %s', (userid,))
+        courses = cursor.fetchall()
+    except Exception as e:
+        mysql.connection.rollback()
+        raise e
+    finally:
+        cursor.close()
+
+    return render_template('home.html', courses=courses)
+
+
+
+# This route handles requests to the '/course' endpoint.
+@app.route('/course/<int:id>', methods=['GET', 'POST'])
+@app.route('/course', methods=['GET', 'POST'], defaults={'id': None})
+def course(courseid):
+    userid = session.get('id')
+
+    # Get the course and its lessons
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT * FROM courses WHERE id =  %s', (courseid,))
+    course = cursor.fetchone()
+    cursor.execute('SELECT * FROM lessons WHERE courseid =  %s', (courseid,))
+    lessons = cursor.fetchall()
+
+    # Check if user enrolled in a course 
+    enrolled = is_enrolled(userid=userid, courseid=courseid)
+
+    if enrolled: 
+        # Check if the user has learned all slides of the course
+        learned_all_slides = learned_all_slides(userid)
+
+        # If the users hasn't learned all slides, Get the lessonid of the first unlearned slide
+        if not learned_all_slides:
+            lessonid = get_first_unlearned_slide_lessonid(userid)
+
+    return render_template('course.html', course=course, lessons=lessons, enrolled=enrolled, learned_all_slides=learned_all_slides, lessonid=lessonid)
+
+
+
+# Check if user enrolled in a course 
+def is_enrolled(userid, courseid):
+    cursor = mysql.connection.cursor()
+    cursor.execute('SELECT * FROM users_courses WHERE userid = %s AND courseid = %s', (userid, courseid,))
+    enrolled_in_course = cursor.fetchone()
+    cursor.close()
+    if enrolled_in_course:
+        return True
+    return False
+
+
+
+def get_first_unlearned_slide_lessonid(userid, courseid):
+    cursor = mysql.connection.cursor()
+    cursor.execute('SELECT lessonid FROM slides WHERE id = (SELECT slideid FROM users_slides WHERE userid = %s AND courseid = %s AND state = %s LIMIT 1);', (userid, courseid, 'unlearned',))
+    lessonid = cursor.fetchone()
+    cursor.close()
+    return lessonid

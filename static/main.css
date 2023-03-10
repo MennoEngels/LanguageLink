@@ -194,3 +194,34 @@ a:hover, a:active { text-decoration: none; color:#333 }
     max-width: 715px;
     margin: auto;
 }
+
+.lessons {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 130px);
+    justify-content: space-between;
+}
+
+.lesson {
+    background-color: #eee;
+    border-radius: 5px;
+    padding: 0;
+    color: #3e3e3e;
+    text-align: center;
+    cursor: pointer;
+    width: 125px;
+    overflow: hidden;
+    position: relative;
+    box-sizing: border-box;
+    transition: none;
+    height: 189px;
+    margin-bottom: 13px;
+    float: left;
+}
+
+.lesson_title {
+    font-weight: bold;
+    width: auto;
+    padding: 10px 8px 0;
+    height: 35px;
+}
