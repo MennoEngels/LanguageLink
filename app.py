@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory, os
 from flask_mysqldb import MySQL
 from flask import jsonify
 import MySQLdb.cursors
@@ -258,7 +258,48 @@ def start_mp_lesson(lesson_id):
     return render_template('multiple_choice_lesson.html', lesson=lesson, slides=slides)
 
 
+
+# This route handles requests to the '/slides' endpoint.
+# If a lesson ID parameter is provided, it returns the slides for that lesson.
+# Otherwise, it returns a list of all available slides.
+@app.route('/slides', methods=['GET', 'POST'], defaults={'lesson_id': None})
+@app.route('/slides/<int:lesson_id>', methods=['GET', 'POST'])
+def get_slides(lesson_id):
+    userid = session.get('id')
     
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    if lesson_id is None:
+        # If no lesson ID is provided, retrieve all slides 
+        cursor.execute('SELECT * FROM slides WHERE lessonid')
+        slides = cursor.fetchall()
+
+        cursor.close()
+
+        return jsonify(slides)
+    else:
+        # If a lesson ID is provided, retrieve the slides for that lesson.
+        cursor.execute('SELECT * FROM slides INNER JOIN users_slides ON slides.id = users_slides.slideid WHERE userid = %s AND slides.lessonid = %s', (userid, lesson_id,))
+        slides = cursor.fetchall()
+
+        cursor.close()
+
+        return jsonify(slides)
+
+
+        
+# This route handles requests for a specific audio file.
+# The 'path:filename' parameter in the URL allows for filenames with slashes in them.
+@app.route('/audio/<path:filename>', methods=['GET', 'POST'])
+def download_audio(filename):
+    # Set the directory where uploaded audio files are stored.
+    uploads = os.path.join(app.root_path, 'static/audio/')
+
+    # Return the audio file
+    return send_from_directory(directory=uploads, path=filename + '.mp3')
+
+
+
 # Check if user enrolled in a course 
 def is_enrolled(userid, courseid):
     cursor = mysql.connection.cursor()

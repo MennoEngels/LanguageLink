@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LanguageLink</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+    </head>
+    <body>
+        <header>
+            <div class="top">
+                <a href="{{ url_for('lesson') }}/{{ lesson['lesson_id'] }}">{{ lesson['lesson_name'] }}</a>
+                <button id="start">Start</button>
+            </div>
+        </header>
+            <div class="box">
+                <progress id="score" value="0" max="100" data-label="50% Complete"></progress>
+                
+                <div class="word_wrapper">
+                    <h1 id="currentword"></h1>
+                    <button id="replay" class="replay">
+                        <i class="fas fa-play"></i>
+                    </button>
+                </div>
+                <h2 id="language">Korean</h2>
+                <input id="text" enterkeyhint="send" type="text" data-testid="typing-response-input" font-size="1.5rem" class="input">
+                <p id="correct" class="correct"></p>
+            </div>
+        <audio id="player"></audio>
+        <audio id="soundeffect"></audio>
+        <script src="{{ url_for('static', filename='index.js') }}"></script>
+    </body>
+</html>

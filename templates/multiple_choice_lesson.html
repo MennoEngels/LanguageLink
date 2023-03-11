@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LanguageLink</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+    </head>
+    <body>
+        <header>
+            <div class="top">
+                <a href="{{ url_for('lesson') }}/{{ lesson['lesson_id'] }}">{{ lesson['lesson_name'] }}</a>
+                <h1>Multiple Choice lesson</h1>
+                <button id="start">Start</button>
+            </div>
+        </header>
+            <div class="box">
+                <progress id="score" value="0" max="100" data-label="50% Complete"></progress>
+                
+                <div class="word_wrapper">
+                    <h1 id="currentword"></h1>
+                    <button id="replay" class="replay">
+                        <i class="fas fa-play"></i>
+                    </button>
+                </div>
+                <h2 id="language">Korean</h2>
+                
+                <div class="answer_wrapper">
+                    <div class="answer_row">
+                        <button id="answer_1" class="answer">Maybe this one 1</button>
+                        <button id="answer_2" class="answer">Or this one 2</button>
+                    </div>
+                    <div class="answer_row">
+                        <button id="answer_3" class="answer">Or maybe this one maybe 3</button>
+                        <button id="answer_4" class="answer">This one maybe? 4</button>
+                    </div>
+                    <button id="continue" class="continue" style="display: none;">Continue</button>
+                </div>
+            </div>
+        <audio id="player"></audio>
+        <audio id="soundeffect"></audio>
+        <script src="{{ url_for('static', filename='index.js') }}"></script>
+    </body>
+</html>
