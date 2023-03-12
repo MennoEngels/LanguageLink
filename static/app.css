@@ -1,0 +1,237 @@
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #EDF2F4;
+}
+
+header {
+    width: 100%;
+    min-height: 3rem;
+    background-color: #152365;
+    display: flex;
+}
+
+header .top {
+    width: 100%;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    margin-right: auto;
+    line-height: 4.5rem;
+    display: flex;
+}
+
+a, h1, h2, h3, h4, input {
+    font-family: sans-serif;
+}
+
+.top a {
+    color: #f5f5f5;
+    font-weight: 700;
+    cursor: pointer;
+    margin-left: 1.2rem;
+    margin-right: 1.2rem;
+    font-size: 1.5rem;
+    text-decoration-line: none;
+}
+
+.top h1 {
+    color: #f5f5f5;
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.top a:visited { 
+    color: #f5f5f5;
+}
+
+.top button {
+    margin-left: 1.2rem;
+    margin-right: 1.2rem;
+    border-color: rgb(188, 194, 207);
+    background-color: rgb(231, 234, 240);
+    border-radius: 0.3rem;
+    border-width: 2px;
+    border-style: solid;
+    font-size: 0.875rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-family: sans-serif;
+    text-align: center;
+    color: #222;
+}
+
+h2 {
+    font-family: sans-serif;
+    text-transform: uppercase;
+    align-self: flex-start;
+    margin-bottom: 1rem;
+    margin-top: 0px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #222;
+}
+
+p {
+    font-family: sans-serif;
+    font-size: 1rem;
+    margin: 1rem 0px; 
+    color: #222;
+}
+
+.input {
+    font-family: sans-serif;
+    height: 4rem;
+    font-size: 1.5rem;
+    padding-top: 0px;
+    padding-right: 1rem;
+    border-radius: 0.75rem;
+    border-width: 2px;
+    border-style: solid;
+    border-color: rgb(188, 194, 207);
+    background-color: rgb(231, 234, 240);
+    padding-left: 16px;
+    padding-right: 16px;
+    color: rgb(41, 55, 73);
+}
+
+.box {
+    position: relative;
+    margin: auto;
+    max-width: 800px;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    padding: 32px;
+}
+
+
+progress{
+    width: 100%;
+    height: 2rem;
+    appearance: none;
+
+}
+
+progress::-webkit-progress-value {
+    background-color: #6f8197;
+    border-radius: 0.75rem;
+}
+
+progress::-webkit-progress-bar {
+    background-color: rgb(231, 234, 240);
+    border-radius: 0.75rem
+}
+
+progress:before {
+    content: attr(data-label);
+    font-size: 0.8em;
+    vertical-align: 0;
+    position:absolute;
+    left:0;
+    right:0;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.formbtn {
+    max-width: 100px;
+    text-transform: uppercase;
+}
+
+.word_wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.replay {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 2rem;
+    border-style: solid;
+    margin-left: 1.2rem;
+    margin-right: 1.2rem;
+    border-color: rgb(188, 194, 207);
+    background-color: rgb(231, 234, 240);
+    border-width: 2px;
+    border-style: solid;
+    font-size: 0.9frem;
+    cursor: pointer;
+}
+
+.answer_wrapper {
+    width: 100%;
+}
+
+.answer_row {
+    width: 100%;
+    display: flex;
+}
+
+.answer_row .answer {
+    width: 50%;
+    margin-bottom: 1rem;
+    border-color: rgb(188, 194, 207);
+    background-color: rgb(231, 234, 240);
+    border-radius: 0.3rem;
+    border-width: 2px;
+    border-style: solid;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 1rem;
+    font-weight: 600
+}
+
+.continue {
+    width: 100%;
+    margin-bottom: 1rem;
+    border-color: rgb(188, 194, 207);
+    background-color: rgb(231, 234, 240);
+    border-radius: 0.3rem;
+    border-width: 2px;
+    border-style: solid;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 1rem;
+    font-weight: 600
+}
+
+.answer_row > button, .replay, .top button, .continue {
+    transition: background-color 0.2s ease;
+}
+
+.answer_row > button:hover, .replay:hover, .top button:hover, .continue:hover {
+    background-color: rgb(211, 214, 220);
+}
+
+#answer_1, #answer_3 {
+    margin-right: 0.5rem;
+}
+
+#answer_2, #answer_4 {
+    margin-left: 0.5rem;
+}
+
+.wrong_answer {
+    border-color: #b13036 !important;
+    background-color: #f5c2c4 !important;
+}
+
+.correct_answer {
+    border-color: #4CAF50 !important;
+    background-color: #C8E6C9 !important;
+}
