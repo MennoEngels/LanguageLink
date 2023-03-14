@@ -1,7 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory, os
+from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory
 from flask_mysqldb import MySQL
 from flask import jsonify
-import MySQLdb.cursors
+import MySQLdb.cursors, os
 from config import app
 
 # Intialize MySQL
@@ -134,7 +134,7 @@ def enroll_user(courseid):
 
     try:
         # Check if the user is already enrolled in the course
-        enrolled = is_enrolled(userid, courseid)
+        enrolled = is_enrolled(userid=userid, courseid=courseid)
 
         if not enrolled:
             # If the user is not enrolled, enroll the user
@@ -198,8 +198,8 @@ def removecourse(id):
 
 
 # This route handles requests to the '/course' endpoint.
-@app.route('/course/<int:id>', methods=['GET', 'POST'])
-@app.route('/course', methods=['GET', 'POST'], defaults={'id': None})
+@app.route('/course/<int:courseid>', methods=['GET', 'POST'])
+@app.route('/course', methods=['GET', 'POST'], defaults={'courseid': None})
 def course(courseid):
     userid = session.get('id')
 
@@ -215,11 +215,11 @@ def course(courseid):
 
     if enrolled: 
         # Check if the user has learned all slides of the course
-        learned_all_slides = learned_all_slides(userid)
+        learned_all_slides = did_learn_all_slides(userid=userid, courseid=courseid)
 
         # If the users hasn't learned all slides, Get the lessonid of the first unlearned slide
         if not learned_all_slides:
-            lessonid = get_first_unlearned_slide_lessonid(userid)
+            lessonid = get_first_unlearned_slide_lessonid(userid=userid, courseid=courseid)
 
     return render_template('course.html', course=course, lessons=lessons, enrolled=enrolled, learned_all_slides=learned_all_slides, lessonid=lessonid)
 
@@ -313,9 +313,9 @@ def is_enrolled(userid, courseid):
 
 
 # Check if user has learned all slides in a course 
-def learned_all_slides(userid, courseid):
+def did_learn_all_slides(userid, courseid):
     cursor = mysql.connection.cursor()
-    cursor.execute('SELECT * FROM users_slides WHERE state = %s AND userid = %s AND courseid = %s', ('unlearned', userid, courseid,))
+    cursor.execute('SELECT users_slides.id FROM users_slides INNER JOIN slides ON users_slides.slideid = slides.id INNER JOIN lessons ON slides.lessonid = lessons.lesson_id WHERE state = %s AND userid = %s AND courseid = %s', ('unlearned', userid, courseid,))
     slides = cursor.fetchone()
     cursor.close()
     if not slides:
@@ -326,7 +326,7 @@ def learned_all_slides(userid, courseid):
 
 def get_first_unlearned_slide_lessonid(userid, courseid):
     cursor = mysql.connection.cursor()
-    cursor.execute('SELECT lessonid FROM slides WHERE id = (SELECT slideid FROM users_slides WHERE userid = %s AND courseid = %s AND state = %s LIMIT 1);', (userid, courseid, 'unlearned',))
+    cursor.execute('SELECT lessonid FROM slides WHERE id = (SELECT slideid FROM users_slides INNER JOIN slides ON users_slides.slideid = slides.id INNER JOIN lessons ON slides.lessonid = lessons.lesson_id WHERE userid = %s AND courseid = %s AND state = %s LIMIT 1);', (userid, courseid, 'unlearned',))
     lessonid = cursor.fetchone()
     cursor.close()
     return lessonid
